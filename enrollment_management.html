@@ -1,0 +1,148 @@
+
+{% extends "base.html" %}
+
+{% block title %}Enrollment Management - Smart Campus{% endblock %}
+
+{% block content %}
+
+<h2>Enrollment Management</h2>
+<p>Manage student enrollments and faculty assignments.</p>
+
+<section class="card">
+    <h3>Enroll Student in Course</h3>
+
+    <form method="POST" class="stack">
+
+        <input type="hidden" name="action" value="enroll">
+
+        <label for="student_id">Select Student</label>
+        <select name="student_id" id="student_id" required>
+            <option value="">Choose Student</option>
+
+            {% for student in students %}
+            <option value="{{ student.id }}">
+                {{ student.name }} - {{ student.roll_no }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label for="enroll_course_id">Select Course</label>
+        <select name="course_id" id="enroll_course_id" required>
+            <option value="">Choose Course</option>
+
+            {% for course in courses %}
+            <option value="{{ course.id }}">
+                {{ course.course_code }} - {{ course.course_name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Enroll Student</button>
+
+    </form>
+</section>
+
+<section class="card">
+    <h3>Assign Faculty to Course</h3>
+
+    <form method="POST" class="stack">
+
+        <input type="hidden" name="action" value="assign_faculty">
+
+        <label for="faculty_course_id">Select Course</label>
+        <select name="course_id" id="faculty_course_id" required>
+            <option value="">Choose Course</option>
+
+            {% for course in courses %}
+            <option value="{{ course.id }}">
+                {{ course.course_code }} - {{ course.course_name }}
+                {% if course.faculty_name %}
+                    ({{ course.faculty_name }})
+                {% else %}
+                    (Not assigned)
+                {% endif %}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label for="faculty_id">Select Faculty</label>
+        <select name="faculty_id" id="faculty_id" required>
+            <option value="">Choose Faculty</option>
+
+            {% for member in faculty %}
+            <option value="{{ member.id }}">
+                {{ member.name }} - {{ member.department }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Assign Faculty</button>
+
+    </form>
+</section>
+
+<section class="card">
+    <h3>Course Faculty Assignments</h3>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Course Name</th>
+                    <th>Assigned Faculty</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>{{ course.course_code }}</td>
+                    <td>{{ course.course_name }}</td>
+                    <td>{{ course.faculty_name or 'Not assigned' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3">No courses found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <h3>Student Course Enrollments</h3>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Course Code</th>
+                    <th>Course Name</th>
+                    <th>Faculty</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in enrollments %}
+                <tr>
+                    <td>{{ item.student_name }}</td>
+                    <td>{{ item.roll_no }}</td>
+                    <td>{{ item.course_code }}</td>
+                    <td>{{ item.course_name }}</td>
+                    <td>{{ item.faculty_name or 'Not assigned' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">No enrollments found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

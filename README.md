@@ -1,94 +1,59 @@
 # Smart Campus Management System
 
-## About the Project
-Smart Campus Management System is a web-based application developed to simplify and manage academic and administrative activities in educational institutions.
-
-## Technologies Used
-- Python
-- Flask
-- MySQL
-- HTML
-- CSS
-- JavaScript
+A diploma/undergraduate mini-project built with Python Flask and MySQL.
 
 ## Features
+- Role-based login: admin, faculty, student
+- Admin: create student accounts and publish announcements
+- Faculty/admin: mark attendance for enrolled students
+- Student: view course-wise attendance summary
+- All roles: view announcements and timetable
+- Server-side role checks, password hashing, parameterized SQL
 
-### Admin
-- Manage student and faculty records.
-- Manage courses and enrollments.
-- Assign faculty to courses.
-- Publish announcements.
-- Manage leave requests.
+## Requirements
+- Python 3.10+
+- MySQL Server 8.x (or compatible)
+- A browser
 
-### Faculty
-- Manage student attendance.
-- View assigned courses.
-- Upload course materials.
-- Review leave requests.
+## Setup (local development)
 
-### Student
-- View attendance records.
-- Check class timetables.
-- Access course materials.
-- Submit leave requests.
-- Receive low-attendance alerts.
-- View announcements.
-
-## Installation and Setup
-
-1. Clone or download the project.
-2. Open the project folder in VS Code.
-3. Create a virtual environment:
-
-   ```bash
-   python -m venv .venv
+1. Create a virtual environment:
+   - Windows: `python -m venv .venv` then `.venv\Scripts\activate`
+   - macOS/Linux: `python3 -m venv .venv` then `source .venv/bin/activate`
+2. Install packages: `pip install -r requirements.txt`
+3. Create the database and tables by running `schema.sql` in MySQL:
+   `mysql -u root -p < schema.sql`
+4. Create a restricted database user, for example:
+   ```sql
+   CREATE USER 'campus_app'@'localhost' IDENTIFIED BY 'choose-a-strong-password';
+   GRANT SELECT, INSERT, UPDATE, DELETE ON smart_campus.* TO 'campus_app'@'localhost';
+   FLUSH PRIVILEGES;
    ```
+5. Copy `.env.example` to `.env`, set the database credentials, and set a long random `FLASK_SECRET_KEY`.
+6. Create the first admin account using the one-time script below.
+7. Run: `flask --app app run --debug`
+8. Open `http://127.0.0.1:5000`.
 
-4. Activate the virtual environment:
+## Create first admin account
 
-   **Windows:**
-   ```powershell
-   .\.venv\Scripts\activate
-   ```
+Run this from the project directory after setting up `.env` and the database:
 
-5. Install dependencies:
-
-   ```bash
-   pip install Flask mysql-connector-python python-dotenv
-   ```
-
-6. Create a MySQL database named `smart_campus`.
-7. Configure your database credentials in the `.env` file.
-8. Ensure the required database tables are created.
-9. Run the application:
-
-   ```bash
-   python app.py
-   ```
-
-10. Open your browser and visit:
-
-   `http://127.0.0.1:5000`
-
-## Project Structure
-
-```text
-Smart Campus Management System/
-│
-├── app.py
-├── .env
-├── requirements.txt
-├── templates/
-├── static/
-│   └── uploads/
-└── README.md
+```bash
+python create_admin.py
 ```
 
-## Database
-MySQL is used to store student information, faculty details, courses, enrollments, attendance, timetables, announcements, leave requests, and course materials.
+The script asks for the admin name, email, and password and stores a password hash.
 
-## Author
-Smart Campus Management System Project
+## Important: initial data
+The starter app supports creating students and publishing notices, but course, faculty, enrollment, and timetable records must be inserted into MySQL (or you can extend the admin screens). Attendance requires a faculty record assigned to the course and student enrollments. See `sample_data.sql` for example setup records; edit the sample values before running it.
 
-## License
-This project is developed for academic purposes.
+## Security notes
+- This is an educational starter, not production-ready campus software.
+- Add CSRF protection (e.g. Flask-WTF) before deployment.
+- Use HTTPS and secure session cookie settings in production.
+- Never use Flask debug mode on a public server.
+- Use test data only until access control, backups, and institutional privacy requirements are reviewed.
+
+## Create a faculty account
+
+After configuring `.env`, run `python create_faculty.py`. Then insert a course assigned to the new faculty ID and enroll students for attendance testing.
